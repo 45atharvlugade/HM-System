@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: PATIENT-SERVICE
+  config:
+    import: optional:configserver:http://localhost:8888
+  data:
+    redis:
+      host: localhost
+      port: 6379
