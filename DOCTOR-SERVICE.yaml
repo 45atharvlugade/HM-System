@@ -1,0 +1,74 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: DOCTOR-SERVICE
+
+  datasource:
+    url: jdbc:oracle:thin:@localhost:1521:XE
+    username: system
+    password: Atharv123
+    driver-class-name: oracle.jdbc.OracleDriver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database-platform: org.hibernate.dialect.OracleDialect
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    enable:
+      all: true
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      patientServiceCB:
+        registerHealthIndicator: true
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        slidingWindowSize: 10
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+
+  retry:
+    instances:
+      patientServiceRetry:
+        maxAttempts: 3
+        waitDuration: 2s
+
+  timelimiter:
+    instances:
+      patientServiceTimeout:
+        timeoutDuration: 3s
+
+logging:
+  level:
+    root: INFO
+    com.star.patient: DEBUG
+    org.springframework: INFO
+    io.github.resilience4j: INFO
+
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
